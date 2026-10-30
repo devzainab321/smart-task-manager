@@ -158,8 +158,9 @@ ul {
   transition: 0.2s;
 }
 
-.container > div button:hover 
+.container > div button:hover {
   background: #4f46e5;
+}
 .task-card .edit-btn {
   background: #dbeafe;
   color: #1d4ed8;
