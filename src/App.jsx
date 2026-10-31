@@ -1,8 +1,36 @@
- import { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import "./app.css";
 
 function App() {
-  const enableNotifications = async () => {
+const playAlarm = () => {
+  
+const audioContext = window.alarmAudioContext;
+if (!audioContext) return;
+
+
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.frequency.value = 880;
+  gain.gain.value = 0.15;
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 1);
+};
+
+
+ useEffect(() => {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/firebase-messaging-sw.js")
+      .catch((error) => console.log("Service Worker Error:", error));
+  }
+}, []);
+
+const enableNotifications = async () => {
   if (!("Notification" in window)) {
     alert("Your browser does not support notifications.");
     return;
@@ -10,12 +38,22 @@ function App() {
 
   const permission = await Notification.requestPermission();
 
+  
   if (permission === "granted") {
-    alert("Notifications enabled successfully!");
-  } else {
+  window.alarmAudioContext = new (
+    window.AudioContext || window.webkitAudioContext
+  )();
+
+  await window.alarmAudioContext.resume();
+
+  alert("Notifications enabled successfully!");
+}
+  
+  else {
     alert("Please allow notifications in your browser.");
   }
 };
+
   const [task, setTask] = useState("");
 const [searchTerm, setSearchTerm] = useState("");
 const [filter, setFilter] = useState("All");
@@ -53,8 +91,8 @@ const clearAllTasks = () => {
     setTasks([]);
   }
 };
-  useEffect(() => {
-    localStorage.setItem("myTasks", JSON.stringify(tasks));
+  (() => {
+    localStorage.setItem("myuseEffectTasks", JSON.stringify(tasks));
   }, [tasks]);useEffect(() => {
   const checkReminders = () => {
     const now = new Date();
@@ -68,9 +106,16 @@ const clearAllTasks = () => {
 
       if (now >= taskDateTime) {
         if (Notification.permission === "granted") {
-          new Notification("Task Reminder 🔔", {
-            body: item.text,
-          });
+          playAlarm();
+          
+        navigator.serviceWorker.ready.then((registration) => {
+  registration.showNotification("Task Reminder 🔔", {
+    body: item.text,
+    icon: "/favicon.svg",
+    tag: String(item.id),
+  });
+});
+          
         }
 
         setTasks((prevTasks) =>
