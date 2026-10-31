@@ -26,10 +26,12 @@ A simple and responsive Todo App built using React.
 
 ## Technologies Used
 
-- React
-- CSS
+- HTML5
+- CSS3
 - JavaScript
 - Vite
+- React.js
+- 
 
 ## Author
 
