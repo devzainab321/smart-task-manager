@@ -30,27 +30,30 @@ if (!audioContext) return;
   }
 }, []);
 
-const enableNotifications = async () => {
+  const enableNotifications = async () => {
   if (!("Notification" in window)) {
     alert("Your browser does not support notifications.");
     return;
   }
 
-  const permission = await Notification.requestPermission();
+  try {
+    window.alarmAudioContext = new (
+      window.AudioContext || window.webkitAudioContext
+    )();
 
-  
-  if (permission === "granted") {
-  window.alarmAudioContext = new (
-    window.AudioContext || window.webkitAudioContext
-  )();
+    await window.alarmAudioContext.resume();
 
-  await window.alarmAudioContext.resume();
+    playAlarm();
 
-  alert("Notifications enabled successfully!");
-}
-  
-  else {
-    alert("Please allow notifications in your browser.");
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      alert("Notifications enabled successfully!");
+    } else {
+      alert("Please allow notifications in your browser.");
+    }
+  } catch (error) {
+    console.log("Audio Error:", error);
   }
 };
 
