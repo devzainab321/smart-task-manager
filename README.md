@@ -31,7 +31,6 @@ A simple and responsive Todo App built using React.
 - JavaScript
 - Vite
 - React.js
-- 
 
 ## Author
 
